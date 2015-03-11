@@ -13,17 +13,25 @@ module.exports = function (grunt) {
   var fs = require("fs"),
     path = require("path"),
     SVGO = require("svgo");
+
   var svgo = new SVGO();
   // Please see the Grunt documentation for more information regarding task
   // creation: http://gruntjs.com/creating-tasks
 
-  grunt.registerMultiTask('color_svg_icons', 'Color svg icons.', function () {
-    // Merge task-specific and/or target-specific options with these defaults.
-    var options = this.options({
-      punctuation: '.',
-      separator: ', '
-    });
+  function transform (data, fill) {
+    if (fill) {
+      if (data.match(/fill="/)) {
+        data = data.replace(/(fill=")[^"]+(")/g, "$1" + fill + "$2");
+      }
+    }
+    return data;
+  }
 
+  grunt.registerMultiTask('color_svg_icons', 'Color svg icons.', function () {
+    var colors = this.data.options.colors;
+    if (!colors) {
+      grunt.log.error('Must define colors to set svgs.');
+    }
     // Iterate over all specified file groups.
     this.files.forEach(function (f) {
       // Concat specified files.
@@ -36,15 +44,28 @@ module.exports = function (grunt) {
           return true;
         }
       }).map(function (filepath) {
+        var rObj = {};
+        rObj['filename']=filepath;
         // Read file source.
-        return grunt.file.read(filepath);
-      }).join(grunt.util.normalizelf(options.separator));
+        rObj['file'] = grunt.file.read(filepath);
+        return rObj;
+      });
 
-      // Handle options.
-      src += options.punctuation;
 
-      // Write the destination file.
-      grunt.file.write(f.dest, src);
+      src.forEach(function(data) {
+        grunt.log.writeln('Source filename ' + data['filename']);
+        grunt.verbose.writeln('Source filename contents ' + data['file']);
+        svgo.optimize(data['file'],function(result) {
+          for (var c in colors) {
+            var output = transform(result.data, colors[c]);
+            grunt.verbose.writeln('Changed svg to color ' + colors[c] + ' svg contents : ' + output);
+            var outpath = f.dest + path.sep +  c + '_' + path.basename(data['filename']);
+            grunt.log.writeln('File "' + outpath + '" created.');
+            grunt.file.write(outpath, output);
+          }
+        });
+      });
+
 
       // Print a success message.
       grunt.log.writeln('File "' + f.dest + '" created.');

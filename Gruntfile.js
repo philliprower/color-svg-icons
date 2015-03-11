@@ -8,7 +8,7 @@
 
 'use strict';
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 
   // Project configuration.
   grunt.initConfig({
@@ -30,29 +30,17 @@ module.exports = function(grunt) {
 
     // Configuration to be run (and then tested).
     color_svg_icons: {
-      default_options: {
+      svg_options: {
         options: {
+          colors: {
+            normal: '#bcbcbc',
+            hover: '#5f6062'
+          }
         },
         files: {
-          'tmp/default_options': ['test/fixtures/testing', 'test/fixtures/123']
+          'tmp/svgs': ['test/svgs/*']
         }
-      },
-      custom_options: {
-        options: {
-          separator: ': ',
-          punctuation: ' !!!'
-        },
-        files: {
-          'tmp/custom_options': ['test/fixtures/testing', 'test/fixtures/123']
-        }
-      },
-        svg_options: {
-            options: {
-            },
-            files: {
-                'tmp/svgs': ['test/svgs/*']
-            }
-        }
+      }
     },
 
     // Unit tests.
@@ -72,9 +60,11 @@ module.exports = function(grunt) {
 
   // Whenever the "test" task is run, first clean the "tmp" dir, then run this
   // plugin's task(s), then test the result.
-  grunt.registerTask('test', ['clean', 'color_svg_icons', 'nodeunit']);
+  //grunt.registerTask('test', ['clean', 'color_svg_icons', 'nodeunit']);
+  grunt.registerTask('test', ['clean', 'color_svg_icons']);
 
   // By default, lint and run all tests.
+  //grunt.registerTask('default', ['jshint', 'test']);
   grunt.registerTask('default', ['jshint', 'test']);
 
 };
