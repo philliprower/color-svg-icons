@@ -23,9 +23,31 @@ module.exports = function (grunt) {
       if (data.match(/fill="/)) {
         data = data.replace(/(fill=")[^"]+(")/g, "$1" + fill + "$2");
       }
+      else {
+        var attributes = " fill=\"" + fill + "\"";
+        data = data.replace(/<path/, "<path" + attributes);
+      }
     }
     return data;
   }
+
+  //function transform (data, fill) {
+  //
+  //  if (data !== data.match(/^<g>(?:.*?)<\/g>/)) {
+  //    data = "<g>" + data + "</g>";
+  //  }
+  //  var attributes = "";
+  //  if (fill) {
+  //    if (data.match(/fill="/)) {
+  //      data = data.replace(/(fill=")[^"]+(")/g, "$1" + fill + "$2");
+  //    }
+  //    else {
+  //      attributes += " fill=\"" + fill + "\"";
+  //    }
+  //  }
+  //  data = data.replace(/^<g/, "<g" + attributes);
+  //  return data;
+  //}
 
   grunt.registerMultiTask('color_svg_icons', 'Color svg icons.', function () {
     var colors = this.data.options.colors;
@@ -55,15 +77,24 @@ module.exports = function (grunt) {
       src.forEach(function(data) {
         grunt.log.writeln('Source filename ' + data['filename']);
         grunt.verbose.writeln('Source filename contents ' + data['file']);
-        svgo.optimize(data['file'],function(result) {
+        //svgo.optimize(data['file'],function(result) {
+        //  for (var c in colors) {
+        //    var output = transform(result.data, colors[c]);
+        //    grunt.verbose.writeln('Changed svg to color ' + colors[c] + ' svg contents : ' + output);
+        //    var outpath = f.dest + path.sep +  c + '_' + path.basename(data['filename']);
+        //    grunt.log.writeln('File "' + outpath + '" created.');
+        //    grunt.file.write(outpath, output);
+        //  }
+        //});
+        var result = data['file'];
           for (var c in colors) {
-            var output = transform(result.data, colors[c]);
+            var output = transform(result, colors[c]);
             grunt.verbose.writeln('Changed svg to color ' + colors[c] + ' svg contents : ' + output);
             var outpath = f.dest + path.sep +  c + '_' + path.basename(data['filename']);
             grunt.log.writeln('File "' + outpath + '" created.');
             grunt.file.write(outpath, output);
           }
-        });
+
       });
 
 
