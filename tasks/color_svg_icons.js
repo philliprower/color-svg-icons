@@ -25,7 +25,9 @@ module.exports = function (grunt) {
       }
       else {
         var attributes = " fill=\"" + fill + "\"";
-        data = data.replace(/<path/, "<path" + attributes);
+        data = data.replace(/<path/g, "<path" + attributes);
+        data = data.replace(/<circle/g, "<circle" + attributes);
+        data = data.replace(/<rect/g, "<rect" + attributes);
       }
     }
     return data;
