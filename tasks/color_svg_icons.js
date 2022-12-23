@@ -11,10 +11,12 @@
 module.exports = function (grunt) {
 
   var fs = require("fs"),
-    path = require("path"),
-    SVGO = require("svgo");
+          path = require("path");
+      
+//    path = require("path"),
+//    SVGO = require("svgo");
 
-  var svgo = new SVGO();
+ // var svgo = new SVGO();
   // Please see the Grunt documentation for more information regarding task
   // creation: http://gruntjs.com/creating-tasks
 
